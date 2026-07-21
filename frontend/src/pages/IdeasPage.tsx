@@ -1,7 +1,7 @@
-import IdeaForm from '../features/ideas/IdeaForm';
-import IdeaList from '../features/ideas/IdeaList';
-import { useState } from 'react';
-import type { IdeaListProps } from '../features/ideas/IdeaList';
+import IdeaForm from "../features/ideas/IdeaForm";
+import IdeaList from "../features/ideas/IdeaList";
+import { useState } from "react";
+import type { IdeaListProps } from "../features/ideas/IdeaList";
 
 function IdeasPage() {
   const [globalState, setGlobalState] = useState<IdeaListProps>({ list: [] });

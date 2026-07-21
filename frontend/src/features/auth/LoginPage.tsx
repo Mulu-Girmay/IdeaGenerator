@@ -1,12 +1,8 @@
-import { useState, type FormEvent } from 'react';
-
-// This component is intentionally not wired up to any route or navigation.
-// It exists as a standalone UI screen — hook it up (routing, auth state,
-// API call, validation, etc.) as part of the exercise.
+import { useState, type FormEvent } from "react";
 
 function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
