@@ -1,5 +1,5 @@
 require("dotenv").config({
-  path: require("path").resolve(__dirname, "../../.env"),
+  path: require("path").resolve(__dirname, "../.env"),
 });
 
 const mongoose = require("mongoose");
@@ -31,7 +31,7 @@ async function seedUsers() {
     const existing = await User.findOne({ username: userData.username });
 
     if (existing) {
-      console.log(`  ⏭  Skipping "${userData.username}" — already exists`);
+      console.log(`   Skipping "${userData.username}" — already exists`);
       continue;
     }
 

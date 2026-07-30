@@ -6,6 +6,7 @@ const connectDb = async (uri) => {
     await mongoose.connect(uri);
     console.log("MongoDb connected");
   } catch (error) {
-    console.log(TokenExpiredError.message);
+    console.log("db not conncted", error.message);
   }
 };
+module.exports = { connectDb };
