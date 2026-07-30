@@ -1,36 +1,35 @@
 const Idea = require("../models/Idea.js");
 
-const createIdea = (req, res) => {
+const createIdea = async (req, res) => {
   const { title, details } = req.body;
-  const newIdea = Idea.create({
+  const newIdea = await Idea.create({
     title: title,
     details: details,
   });
   return res.status(200).json(newIdea);
 };
-const getIdeas = (req, res) => {
-  const ideas = Idea.find();
+const getIdeas = async (req, res) => {
+  const ideas = await Idea.find();
   if (!ideas) {
     return res.status(400).json({ message: "No Ideas Found" });
   }
   return res.status(200).json(ideas);
 };
-const updateIdea = (req, res) => {
+const updateIdea = async (req, res) => {
   const updated = req.body;
   const id = req.params.id;
-  const updatedIdea = Idea.findByIdAndUpdate(
-    { id, update },
-    { new: true },
-    { runValidators: true },
-  );
+  const updatedIdea = await Idea.findByIdAndUpdate(id, updated, {
+    new: true,
+    runValidators: true,
+  });
   if (!updatedIdea) {
     return res.status(400).json({ message: "No Ideas Found" });
   }
   return res.status(200).json(updatedIdea);
 };
-const deleteIdea = (req, res) => {
+const deleteIdea = async (req, res) => {
   const id = req.params.id;
-  const idea = Idea.findByIdAndDelete({ id });
+  const idea = await Idea.findByIdAndDelete(id);
   if (!idea) {
     return res.status(400).json({ message: "No Ideas Found" });
   }

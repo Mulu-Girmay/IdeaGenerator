@@ -5,7 +5,7 @@ import {
   selectAuthLoading,
   selectAuthError,
   selectAuth,
-} from "./AuthSlice";
+} from "./authSlice";
 import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
