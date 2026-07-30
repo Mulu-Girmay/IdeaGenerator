@@ -12,6 +12,8 @@ api.interceptors.request.use((config) => {
   return config;
 });
 export const authAPI = {
-  login: (credentials) => api.post("/auth/login", credentials),
+  login: (credentials: { email: string; password: string }) =>
+    api.post("/auth/login", credentials),
 };
+
 export default api;

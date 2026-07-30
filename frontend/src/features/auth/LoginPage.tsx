@@ -1,11 +1,29 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  loginRequest,
+  selectAuthLoading,
+  selectAuthError,
+  selectAuth,
+} from "./AuthSlice";
+import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useSelector(selectAuth);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/idea");
+    }
+  }, [isAuthenticated, navigate]);
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    dispatch(loginRequest({ email, password }));
   };
 
   return (

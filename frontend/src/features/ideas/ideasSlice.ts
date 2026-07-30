@@ -18,11 +18,7 @@ const initialState: IdeasState = {
 const ideasSlice = createSlice({
   name: "ideas",
   initialState,
-  reducers: {
-    // addIdea(state ,action){
-    //   action =
-    // }
-  },
+  reducers: {},
 });
 
 export const {} = ideasSlice.actions;

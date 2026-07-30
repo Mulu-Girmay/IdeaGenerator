@@ -1,24 +1,24 @@
 const User = require("../models/User");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
 require("dotenv").config();
-
 const generateToken = (userId) => {
-  const token = jwt.sign({ userId }, process.env.JWT_SECRET, {
-    expirein: "15m",
+  return jwt.sign({ userId }, process.env.JWT_SECRET, {
+    expiresIn: "15m",
   });
 };
-
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
-  const user = User.findOne({ email: email });
+  const user = await User.findOne({ email: email });
   if (!user) {
     return res.status(404).json({ message: "User not found" });
   }
-  const isMatch = jwt.compare(password, user.password);
+  const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
     return res.status(400).json({ message: "Invalid email or password" });
   }
-  const generatedToken = generateToken(user._id);
-  return res.status(200).json({ email: user.email, token: generatedToken });
+  const token = generateToken(user._id);
+  return res.status(200).json({ user, token });
 };
 module.exports = { loginUser };
