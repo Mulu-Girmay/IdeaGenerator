@@ -9,7 +9,7 @@ const {
 } = require("../controller/Idea.controller");
 const { authenticate } = require("../middleware/authenticate");
 
-router.get("/", authenticate, getIdeas);
+router.get("/allIdeas", authenticate, getIdeas);
 router.post("/create", authenticate, createIdea);
 router.patch("/update/:id", authenticate, updateIdea);
 router.delete("/delete/:id", authenticate, deleteIdea);

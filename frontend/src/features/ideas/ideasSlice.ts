@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { Idea } from "./types";
 
 export type IdeasStatus = "idle" | "loading" | "succeeded" | "failed";
@@ -18,9 +18,37 @@ const initialState: IdeasState = {
 const ideasSlice = createSlice({
   name: "ideas",
   initialState,
-  reducers: {},
+  reducers: {
+    createIdeaRequest: (
+      state,
+      action: PayloadAction<{ title: string; description: string }>,
+    ) => {
+      state.status = "loading";
+      state.error = null;
+    },
+    updateIdeaRequest: (
+      state,
+      action: PayloadAction<{ id: string; title: string; description: string }>,
+    ) => {
+      state.status = "loading";
+      state.error = null;
+    },
+    deleteIdeaRequest: (state, action: PayloadAction<{ id: string }>) => {
+      state.status = "loading";
+      state.error = null;
+    },
+    AllIdeasRequest: (state, action: PayloadAction<{}>) => {
+      state.status = "loading";
+      state.error = null;
+    },
+  },
 });
 
-export const {} = ideasSlice.actions;
+export const {
+  createIdeaRequest,
+  updateIdeaRequest,
+  deleteIdeaRequest,
+  AllIdeasRequest,
+} = ideasSlice.actions;
 
 export default ideasSlice.reducer;

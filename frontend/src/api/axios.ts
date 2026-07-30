@@ -16,4 +16,13 @@ export const authAPI = {
     api.post("/auth/login", credentials),
 };
 
+export const ideaApi = {
+  createIdea: (ideaData: { title: string; description: string }) =>
+    api.post("/ideas/create", ideaData),
+  GetIdeas: () => api.post("/ideas/allIdeas"),
+  UpdateIdea: (ideaData: { id: string; title: string; description: string }) =>
+    api.post("/ideas/update/:id", ideaData),
+  deleteIdea: () => api.post("/ideas/delete/:id"),
+};
+
 export default api;
