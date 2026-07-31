@@ -7,6 +7,8 @@ import {
   selectIdeasError,
   selectIdeasSuccess,
   clearIdeasSuccess,
+  clearIdeasError,
+  resetIdeasStatus,
 } from "./ideasSlice";
 
 function IdeaForm() {
@@ -17,27 +19,64 @@ function IdeaForm() {
   const error = useSelector(selectIdeasError);
   const success = useSelector(selectIdeasSuccess);
 
+  // Debug logging
+  console.log("🔍 Form State:", { status, error, success, title, details });
+
+  // Reset form state on unmount
+  useEffect(() => {
+    return () => {
+      dispatch(resetIdeasStatus());
+      dispatch(clearIdeasSuccess());
+      dispatch(clearIdeasError());
+    };
+  }, [dispatch]);
+
   useEffect(() => {
     if (success) {
       setTitle("");
       setDetails("");
       setTimeout(() => {
         dispatch(clearIdeasSuccess());
+        dispatch(resetIdeasStatus()); // Reset status after success
       }, 3000);
     }
   }, [success, dispatch]);
 
+  // Reset status if there's an error after showing it
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        dispatch(clearIdeasError());
+        dispatch(resetIdeasStatus()); // Reset status after error
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error, dispatch]);
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!title.trim() || !details.trim()) {
+
+    const trimmedTitle = title.trim();
+    const trimmedDetails = details.trim();
+
+    if (!trimmedTitle || !trimmedDetails) {
+      alert("Please fill in both title and description");
       return;
     }
+
+    console.log("📝 Submitting idea:", {
+      title: trimmedTitle,
+      details: trimmedDetails,
+    });
     dispatch(
-      createIdeaRequest({ title: title.trim(), details: details.trim() }),
+      createIdeaRequest({
+        title: trimmedTitle,
+        details: trimmedDetails,
+      }),
     );
   };
 
-  // const isLoading = status === "loading";
+  const isLoading = status === "loading";
 
   return (
     <div>
@@ -47,18 +86,32 @@ function IdeaForm() {
         {error && (
           <div
             className="error-message"
-            style={{ color: "red", marginBottom: "10px" }}
+            style={{
+              color: "red",
+              marginBottom: "10px",
+              padding: "10px",
+              background: "#ffebee",
+              borderRadius: "4px",
+              border: "1px solid #ffcdd2",
+            }}
           >
-            {error}
+            ❌ {error}
           </div>
         )}
 
         {success && (
           <div
             className="success-message"
-            style={{ color: "green", marginBottom: "10px" }}
+            style={{
+              color: "green",
+              marginBottom: "10px",
+              padding: "10px",
+              background: "#e8f5e9",
+              borderRadius: "4px",
+              border: "1px solid #c8e6c9",
+            }}
           >
-            Idea created successfully!
+            ✅ Idea created successfully!
           </div>
         )}
 
@@ -67,24 +120,30 @@ function IdeaForm() {
           id="title"
           type="text"
           value={title}
+          name="title"
           onChange={(e) => setTitle(e.target.value)}
           placeholder="e.g. Solar-powered backpack"
           required
-          // disabled={isLoading}
+          disabled={isLoading}
+          style={{ opacity: isLoading ? 0.6 : 1 }}
         />
 
         <label htmlFor="details">Description</label>
         <textarea
           id="details"
           value={details}
+          name="details"
           onChange={(e) => setDetails(e.target.value)}
           placeholder="Describe your idea..."
           rows={4}
           required
-          // disabled={isLoading}
+          disabled={isLoading}
+          style={{ opacity: isLoading ? 0.6 : 1 }}
         />
 
-        <SubmitButton type="submit">Submit idea</SubmitButton>
+        <SubmitButton type="submit" disabled={isLoading}>
+          {isLoading ? "Submitting..." : "Submit idea"}
+        </SubmitButton>
       </form>
     </div>
   );

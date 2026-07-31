@@ -9,7 +9,7 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/" element={<LoginPage />} />
+      <Route index path="/" element={<LoginPage />} />
       <Route
         path="/idea"
         element={isAuthenticated ? <IdeasPage /> : <Navigate to="/" />}

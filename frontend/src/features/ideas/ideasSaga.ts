@@ -17,7 +17,6 @@ import {
 } from "./ideasSlice";
 import { Idea } from "./types";
 
-// Handle Create Idea
 function* handleCreateIdea(action: any): SagaIterator {
   try {
     const { title, details } = action.payload;
@@ -36,7 +35,6 @@ function* handleCreateIdea(action: any): SagaIterator {
   }
 }
 
-// Handle Get All Ideas
 function* handleGetAllIdeas(): SagaIterator {
   try {
     const response: { data: Idea[] } = yield call(ideaApi.getIdeas);
@@ -49,7 +47,6 @@ function* handleGetAllIdeas(): SagaIterator {
   }
 }
 
-// Handle Update Idea
 function* handleUpdateIdea(action: any): SagaIterator {
   try {
     const { id, title, details } = action.payload;
@@ -68,7 +65,6 @@ function* handleUpdateIdea(action: any): SagaIterator {
   }
 }
 
-// Handle Delete Idea
 function* handleDeleteIdea(action: any): SagaIterator {
   try {
     const { id } = action.payload;
