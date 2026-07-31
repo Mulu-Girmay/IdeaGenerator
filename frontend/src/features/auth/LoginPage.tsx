@@ -5,13 +5,14 @@ import {
   selectAuthLoading,
   selectAuthError,
   selectAuth,
+  clearError,
 } from "./authSlice";
 import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isAuthenticated } = useSelector(selectAuth);
+  const { isAuthenticated, loading, error } = useSelector(selectAuth);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -21,8 +22,18 @@ function LoginPage() {
     }
   }, [isAuthenticated, navigate]);
 
+  useEffect(() => {
+    // Clear error when component unmounts
+    return () => {
+      dispatch(clearError());
+    };
+  }, [dispatch]);
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!email || !password) {
+      return;
+    }
     dispatch(loginRequest({ email, password }));
   };
 
@@ -32,6 +43,15 @@ function LoginPage() {
         <h2>Log in</h2>
         <p className="login-subtitle">Welcome back to Idea Tracker.</p>
 
+        {error && (
+          <div
+            className="error-message"
+            style={{ color: "red", marginBottom: "10px" }}
+          >
+            {error}
+          </div>
+        )}
+
         <label htmlFor="email">Email</label>
         <input
           id="email"
@@ -39,6 +59,8 @@ function LoginPage() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@example.com"
+          required
+          disabled={loading}
         />
 
         <label htmlFor="password">Password</label>
@@ -48,9 +70,13 @@ function LoginPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="••••••••"
+          required
+          disabled={loading}
         />
 
-        <button type="submit">Log in</button>
+        <button type="submit" disabled={loading}>
+          {loading ? "Logging in..." : "Log in"}
+        </button>
       </form>
     </div>
   );

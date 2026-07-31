@@ -1,10 +1,20 @@
 import IdeaForm from "../features/ideas/IdeaForm";
 import IdeaList from "../features/ideas/IdeaList";
-import { useState } from "react";
-import type { IdeaListProps } from "../features/ideas/IdeaList";
+import { useDispatch, useSelector } from "react-redux";
+import { logout, selectAuth } from "../features/auth/authSlice";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 function IdeasPage() {
-  const [globalState, setGlobalState] = useState<IdeaListProps>({ list: [] });
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useSelector(selectAuth);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/");
+    }
+  }, [isAuthenticated, navigate]);
 
   return (
     <div className="app-shell">
@@ -14,10 +24,14 @@ function IdeasPage() {
       </header>
       <main className="app-main">
         <IdeaForm />
-        <IdeaList list={globalState.list} />
+        <IdeaList />
       </main>
     </div>
   );
 }
 
 export default IdeasPage;
+//  const handleLogout = () => {
+//     dispatch(logout());
+//     navigate("/");
+//   };

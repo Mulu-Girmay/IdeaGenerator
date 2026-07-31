@@ -1,16 +1,17 @@
-import { call, put, takeLatest, takeEvery, delay } from "redux-saga/effects";
+import { call, put, takeLatest, delay } from "redux-saga/effects";
 import { authAPI } from "../../api/axios";
 import { SagaIterator } from "redux-saga";
-import { loginRequest, loginSuccess, loginFailure } from "./AuthSlice";
-import { LoginAction } from "./types.ts";
+import { loginRequest, loginSuccess, loginFailure } from "./authSlice";
+import { LoginAction, LoginResponse } from "./types";
 
 function* handleLogin(action: LoginAction): SagaIterator {
   try {
     const { email, password } = action.payload;
 
-    const response = (yield call(authAPI.login, { email, password })) as {
-      data: any;
-    };
+    const response: { data: LoginResponse } = yield call(authAPI.login, {
+      email,
+      password,
+    });
     const { data } = response;
 
     yield put(loginSuccess({ user: data.user, token: data.token }));
@@ -20,6 +21,9 @@ function* handleLogin(action: LoginAction): SagaIterator {
   } catch (error: any) {
     const message = error.response?.data?.message || "Invalid credentials";
     yield put(loginFailure(message));
+
+    yield delay(5000);
+    yield put({ type: "auth/clearError" });
   }
 }
 

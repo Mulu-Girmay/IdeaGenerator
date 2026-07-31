@@ -1,24 +1,45 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import type { Idea } from "./types";
+import {
+  getAllIdeasRequest,
+  selectIdeasList,
+  selectIdeasStatus,
+  selectIdeasError,
+  deleteIdeaRequest,
+} from "./ideasSlice";
 
-export interface IdeaListProps {
-  list: Idea[];
-}
-
-function IdeaList({ list }: IdeaListProps) {
-  const [renderInfo, setRenderInfo] = useState({
-    count: 0,
-    timestamp: Date.now(),
-  });
+function IdeaList() {
+  const dispatch = useDispatch();
+  const ideas = useSelector(selectIdeasList);
+  const status = useSelector(selectIdeasStatus);
+  const error = useSelector(selectIdeasError);
 
   useEffect(() => {
-    setRenderInfo({
-      count: renderInfo.count + 1,
-      timestamp: Date.now(),
-    });
-  }, [renderInfo]);
+    if (status === "idle") {
+      dispatch(getAllIdeasRequest());
+    }
+  }, [status, dispatch]);
 
-  if (list.length === 0) {
+  const handleDelete = (id: string) => {
+    if (window.confirm("Are you sure you want to delete this idea?")) {
+      dispatch(deleteIdeaRequest({ id }));
+    }
+  };
+
+  if (status === "loading" && ideas.length === 0) {
+    return <p className="status-message">Loading ideas...</p>;
+  }
+
+  if (error) {
+    return (
+      <p className="status-message" style={{ color: "red" }}>
+        {error}
+      </p>
+    );
+  }
+
+  if (ideas.length === 0) {
     return (
       <p className="status-message">
         No ideas yet. Be the first to submit one!
@@ -28,14 +49,31 @@ function IdeaList({ list }: IdeaListProps) {
 
   return (
     <div>
-      <div className="render-info">
-        Last updated: {new Date(renderInfo.timestamp).toLocaleTimeString()}
-      </div>
       <ul className="idea-list">
-        {list.map((idea) => (
+        {ideas.map((idea) => (
           <li key={idea._id} className="idea-card">
             <h3>{idea.title}</h3>
-            <p>{idea.description}</p>
+            <p>{idea.details}</p>
+            <small>
+              Created:{" "}
+              {idea.createdAt
+                ? new Date(idea.createdAt).toLocaleDateString()
+                : "N/A"}
+            </small>
+            <button
+              onClick={() => handleDelete(idea._id)}
+              style={{
+                marginLeft: "10px",
+                padding: "5px 10px",
+                background: "#dc3545",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+              }}
+            >
+              Delete
+            </button>
           </li>
         ))}
       </ul>
