@@ -9,11 +9,25 @@ function App() {
 
   return (
     <Routes>
-      <Route index path="/" element={<LoginPage />} />
+      {/* Public routes */}
+      <Route path="/login" element={<LoginPage />} />
+
+      {/* Protected routes */}
       <Route
         path="/idea"
-        element={isAuthenticated ? <IdeasPage /> : <Navigate to="/" />}
+        element={isAuthenticated ? <IdeasPage /> : <Navigate to="/login" />}
       />
+
+      {/* Default route - redirect based on auth status */}
+      <Route
+        path="/"
+        element={
+          isAuthenticated ? <Navigate to="/idea" /> : <Navigate to="/login" />
+        }
+      />
+
+      {/* Catch all - redirect to home */}
+      <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );
 }

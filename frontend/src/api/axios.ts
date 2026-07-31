@@ -5,15 +5,43 @@ const api = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
+// Request interceptor - add token
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
     if (token) {
+      // Check if token is expired before sending
+      try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        const expiryTime = payload.exp * 1000;
+        if (Date.now() >= expiryTime) {
+          localStorage.removeItem("token");
+          window.location.href = "/login"; // Redirect to login
+          return Promise.reject(new Error("Token expired"));
+        }
+      } catch (error) {
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+        return Promise.reject(new Error("Invalid token"));
+      }
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
   (error) => {
+    return Promise.reject(error);
+  },
+);
+
+// Response interceptor - handle 401 errors
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Token expired or invalid
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+    }
     return Promise.reject(error);
   },
 );

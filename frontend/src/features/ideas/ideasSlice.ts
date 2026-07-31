@@ -12,6 +12,9 @@ export interface IdeasState {
   list: Idea[];
   status: IdeasStatus;
   error: string | null;
+  createsuccess: boolean;
+  updatesuccess: boolean;
+  deletesuccess: boolean;
   success: boolean;
 }
 
@@ -19,6 +22,9 @@ const initialState: IdeasState = {
   list: [],
   status: "idle",
   error: null,
+  createsuccess: false,
+  updatesuccess: false,
+  deletesuccess: false,
   success: false,
 };
 
@@ -26,51 +32,41 @@ const ideasSlice = createSlice({
   name: "ideas",
   initialState,
   reducers: {
-    // Create Idea
     createIdeaRequest: (state, action: PayloadAction<CreateIdeaPayload>) => {
       state.status = "loading";
       state.error = null;
-      state.success = false;
-      console.log("📝 Create Idea Request:", action.payload);
+      state.createsuccess = false;
     },
     createIdeaSuccess: (state, action: PayloadAction<Idea>) => {
-      state.status = "succeeded"; // ✅ Set to succeeded
+      state.status = "succeeded";
       state.list = [action.payload, ...state.list];
-      state.success = true;
+      state.createsuccess = true;
       state.error = null;
-      console.log("✅ Create Idea Success:", action.payload);
     },
     createIdeaFailure: (state, action: PayloadAction<string>) => {
-      state.status = "failed"; // ✅ Set to failed
+      state.status = "failed";
       state.error = action.payload;
-      state.success = false;
-      console.log("❌ Create Idea Failure:", action.payload);
+      state.createsuccess = false;
     },
 
-    // Get All Ideas
     getAllIdeasRequest: (state) => {
       state.status = "loading";
       state.error = null;
-      console.log("📝 Get All Ideas Request");
     },
     getAllIdeasSuccess: (state, action: PayloadAction<Idea[]>) => {
       state.status = "succeeded";
       state.list = action.payload;
       state.error = null;
-      console.log("✅ Get All Ideas Success:", action.payload.length);
     },
     getAllIdeasFailure: (state, action: PayloadAction<string>) => {
       state.status = "failed";
       state.error = action.payload;
-      console.log("❌ Get All Ideas Failure:", action.payload);
     },
 
-    // Update Idea
     updateIdeaRequest: (state, action: PayloadAction<UpdateIdeaPayload>) => {
       state.status = "loading";
       state.error = null;
-      state.success = false;
-      console.log("📝 Update Idea Request:", action.payload);
+      state.updatesuccess = false;
     },
     updateIdeaSuccess: (state, action: PayloadAction<Idea>) => {
       state.status = "succeeded";
@@ -80,36 +76,31 @@ const ideasSlice = createSlice({
       if (index !== -1) {
         state.list[index] = action.payload;
       }
-      state.success = true;
+      state.updatesuccess = true;
       state.error = null;
-      console.log("✅ Update Idea Success:", action.payload);
     },
     updateIdeaFailure: (state, action: PayloadAction<string>) => {
       state.status = "failed";
       state.error = action.payload;
-      state.success = false;
-      console.log("❌ Update Idea Failure:", action.payload);
+      state.updatesuccess = false;
     },
 
     // Delete Idea
     deleteIdeaRequest: (state, action: PayloadAction<DeleteIdeaPayload>) => {
       state.status = "loading";
       state.error = null;
-      state.success = false;
-      console.log("📝 Delete Idea Request:", action.payload);
+      state.deletesuccess = false;
     },
     deleteIdeaSuccess: (state, action: PayloadAction<string>) => {
       state.status = "succeeded";
       state.list = state.list.filter((idea) => idea._id !== action.payload);
-      state.success = true;
+      state.deletesuccess = true;
       state.error = null;
-      console.log("✅ Delete Idea Success:", action.payload);
     },
     deleteIdeaFailure: (state, action: PayloadAction<string>) => {
       state.status = "failed";
       state.error = action.payload;
-      state.success = false;
-      console.log("❌ Delete Idea Failure:", action.payload);
+      state.deletesuccess = false;
     },
 
     clearIdeasError: (state) => {
@@ -119,10 +110,9 @@ const ideasSlice = createSlice({
       state.success = false;
     },
     resetIdeasStatus: (state) => {
-      state.status = "idle"; // ✅ Reset to idle
+      state.status = "idle";
       state.error = null;
       state.success = false;
-      console.log("🔄 Reset Ideas Status");
     },
   },
 });

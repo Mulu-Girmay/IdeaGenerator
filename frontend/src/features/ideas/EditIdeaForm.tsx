@@ -1,98 +1,80 @@
-import { useState, type FormEvent, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { FormEvent, useState, useEffect } from "react";
 import SubmitButton from "../../components/SubmitButton";
+import { useDispatch, useSelector } from "react-redux";
 import {
-  createIdeaRequest,
+  updateIdeaRequest,
   selectIdeasStatus,
   selectIdeasError,
   selectIdeasSuccess,
   clearIdeasSuccess,
   clearIdeasError,
   resetIdeasStatus,
+  selectIdeasList,
 } from "./ideasSlice";
-interface IdeaFormProps {
-  onClose?: () => void;
+interface EditIdeaFormProps {
+  id: string;
+  onCancel?: () => void;
 }
-function IdeaForm({ onClose }: IdeaFormProps) {
+
+const EditIdeaForm = ({ id, onCancel }: EditIdeaFormProps) => {
   const dispatch = useDispatch();
-  const [title, setTitle] = useState("");
-  const [details, setDetails] = useState("");
+  const ideas = useSelector(selectIdeasList);
   const status = useSelector(selectIdeasStatus);
   const error = useSelector(selectIdeasError);
   const success = useSelector(selectIdeasSuccess);
 
+  const ideaToEdit = ideas.find((idea) => idea._id === id);
+
+  const [title, setTitle] = useState(ideaToEdit?.title || "");
+  const [details, setDetails] = useState(ideaToEdit?.details || "");
+
+  useEffect(() => {
+    if (ideaToEdit) {
+      setTitle(ideaToEdit.title);
+      setDetails(ideaToEdit.details);
+    }
+  }, [ideaToEdit]);
+
   useEffect(() => {
     return () => {
-      dispatch(resetIdeasStatus());
       dispatch(clearIdeasSuccess());
       dispatch(clearIdeasError());
+      dispatch(resetIdeasStatus());
     };
   }, [dispatch]);
 
   useEffect(() => {
-    if (success) {
-      setTitle("");
-      setDetails("");
-      setTimeout(() => {
+    if (success && onCancel) {
+      const timer = setTimeout(() => {
+        onCancel();
         dispatch(clearIdeasSuccess());
         dispatch(resetIdeasStatus());
-      }, 3000);
-    }
-  }, [success, dispatch]);
-
-  useEffect(() => {
-    if (error) {
-      const timer = setTimeout(() => {
-        dispatch(clearIdeasError());
-        dispatch(resetIdeasStatus()); // Reset status after error
-      }, 5000);
+      }, 1500);
       return () => clearTimeout(timer);
     }
-  }, [error, dispatch]);
+  }, [success, onCancel, dispatch]);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const trimmedTitle = title.trim();
-    const trimmedDetails = details.trim();
-
-    if (!trimmedTitle || !trimmedDetails) {
-      alert("Please fill in both title and description");
-      return;
-    }
-
     dispatch(
-      createIdeaRequest({
-        title: trimmedTitle,
-        details: trimmedDetails,
-      }),
+      updateIdeaRequest({ id, title: title.trim(), details: details.trim() }),
     );
   };
 
   const isLoading = status === "loading";
 
   return (
-    <div>
-      {/* {onClose && (
-        <button
-          onClick={onClose}
-          style={{
-            position: "absolute",
-            top: "10px",
-            right: "10px",
-            background: "transparent",
-            border: "none",
-            fontSize: "20px",
-            cursor: "pointer",
-            color: "#666",
-          }}
-        >
-          ✕
-        </button>
-      )} */}
-
+    <div
+      style={{
+        border: "1px solid #ccc",
+        padding: "20px",
+        margin: "10px 0",
+        borderRadius: "8px",
+      }}
+    >
       <form className="idea-form" onSubmit={handleSubmit}>
-        <h2>Submit a new idea</h2>
+        <h2>Edit Idea</h2>
 
         {error && (
           <div
@@ -122,13 +104,13 @@ function IdeaForm({ onClose }: IdeaFormProps) {
               border: "1px solid #c8e6c9",
             }}
           >
-            Idea created successfully!
+            Idea updated successfully!
           </div>
         )}
 
-        <label htmlFor="title">Title</label>
+        <label htmlFor="edit-title">Title</label>
         <input
-          id="title"
+          id="edit-title"
           type="text"
           value={title}
           name="title"
@@ -139,9 +121,9 @@ function IdeaForm({ onClose }: IdeaFormProps) {
           style={{ opacity: isLoading ? 0.6 : 1 }}
         />
 
-        <label htmlFor="details">Description</label>
+        <label htmlFor="edit-details">Description</label>
         <textarea
-          id="details"
+          id="edit-details"
           value={details}
           name="details"
           onChange={(e) => setDetails(e.target.value)}
@@ -152,12 +134,30 @@ function IdeaForm({ onClose }: IdeaFormProps) {
           style={{ opacity: isLoading ? 0.6 : 1 }}
         />
 
-        <SubmitButton type="submit" disabled={isLoading}>
-          {isLoading ? "Submitting..." : "Submit idea"}
-        </SubmitButton>
+        <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+          <SubmitButton type="submit" disabled={isLoading}>
+            {isLoading ? "Updating..." : "Update Idea"}
+          </SubmitButton>
+          {onCancel && (
+            <button
+              type="button"
+              onClick={onCancel}
+              style={{
+                padding: "10px 20px",
+                background: "#6c757d",
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+              }}
+            >
+              Cancel
+            </button>
+          )}
+        </div>
       </form>
     </div>
   );
-}
+};
 
-export default IdeaForm;
+export default EditIdeaForm;

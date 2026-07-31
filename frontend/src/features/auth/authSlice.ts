@@ -1,11 +1,33 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AuthState, User } from "./types";
 
+// Helper function to check if token is expired
+const isTokenValid = (token: string | null): boolean => {
+  if (!token) return false;
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    const expiryTime = payload.exp * 1000;
+    return Date.now() < expiryTime;
+  } catch {
+    return false;
+  }
+};
+
+// Get token and validate it
+const getValidToken = (): string | null => {
+  const token = localStorage.getItem("token");
+  if (token && isTokenValid(token)) {
+    return token;
+  }
+  // Remove invalid token
+  localStorage.removeItem("token");
+  return null;
+};
+
 const initialState: AuthState = {
   user: null,
-  token: typeof window !== "undefined" ? localStorage.getItem("token") : null,
-  isAuthenticated:
-    typeof window !== "undefined" ? !!localStorage.getItem("token") : false,
+  token: getValidToken(),
+  isAuthenticated: !!getValidToken(),
   loading: false,
   error: null,
   success: false,
@@ -41,6 +63,10 @@ const authSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
       state.success = false;
+      state.isAuthenticated = false;
+      state.token = null;
+      state.user = null;
+      localStorage.removeItem("token");
     },
 
     logout: (state) => {

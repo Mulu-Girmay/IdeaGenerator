@@ -4,28 +4,34 @@ import {
   loginRequest,
   selectAuthLoading,
   selectAuthError,
-  selectAuth,
+  selectIsAuthenticated,
   clearError,
+  clearSuccess,
 } from "./authSlice";
 import { useNavigate } from "react-router-dom";
+import SubmitButton from "../../components/SubmitButton";
 
 function LoginPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isAuthenticated, loading, error } = useSelector(selectAuth);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const loading = useSelector(selectAuthLoading);
+  const error = useSelector(selectAuthError);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
       navigate("/idea");
     }
   }, [isAuthenticated, navigate]);
 
+  // Clear error on unmount
   useEffect(() => {
-    // Clear error when component unmounts
     return () => {
       dispatch(clearError());
+      dispatch(clearSuccess());
     };
   }, [dispatch]);
 
@@ -74,9 +80,9 @@ function LoginPage() {
           disabled={loading}
         />
 
-        <button type="submit" disabled={loading}>
+        <SubmitButton type="submit" disabled={loading}>
           {loading ? "Logging in..." : "Log in"}
-        </button>
+        </SubmitButton>
       </form>
     </div>
   );
