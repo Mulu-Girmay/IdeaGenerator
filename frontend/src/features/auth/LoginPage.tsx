@@ -20,14 +20,12 @@ function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
       navigate("/idea");
     }
   }, [isAuthenticated, navigate]);
 
-  // Clear error on unmount
   useEffect(() => {
     return () => {
       dispatch(clearError());

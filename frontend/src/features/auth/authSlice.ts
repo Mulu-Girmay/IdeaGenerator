@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AuthState, User } from "./types";
 
-// Helper function to check if token is expired
 const isTokenValid = (token: string | null): boolean => {
   if (!token) return false;
   try {
@@ -13,13 +12,11 @@ const isTokenValid = (token: string | null): boolean => {
   }
 };
 
-// Get token and validate it
 const getValidToken = (): string | null => {
   const token = localStorage.getItem("token");
   if (token && isTokenValid(token)) {
     return token;
   }
-  // Remove invalid token
   localStorage.removeItem("token");
   return null;
 };
@@ -68,7 +65,6 @@ const authSlice = createSlice({
       state.user = null;
       localStorage.removeItem("token");
     },
-
     logout: (state) => {
       state.user = null;
       state.token = null;
@@ -78,7 +74,6 @@ const authSlice = createSlice({
       state.success = false;
       localStorage.removeItem("token");
     },
-
     clearError: (state) => {
       state.error = null;
     },
@@ -93,7 +88,6 @@ export const {
   loginRequest,
   loginSuccess,
   loginFailure,
-  logout,
   clearError,
   clearSuccess,
 } = authSlice.actions;

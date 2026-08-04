@@ -1,7 +1,7 @@
 import IdeaForm from "../features/ideas/IdeaForm";
 import IdeaList from "../features/ideas/IdeaList";
 import { useDispatch, useSelector } from "react-redux";
-import { logout, selectAuth } from "../features/auth/authSlice";
+import { selectAuth } from "../features/auth/authSlice";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
@@ -21,7 +21,6 @@ function IdeasPage() {
     const checkToken = () => {
       const token = localStorage.getItem("token");
       if (!token) {
-        dispatch(logout());
         navigate("/login");
         return;
       }
@@ -33,12 +32,10 @@ function IdeasPage() {
 
         if (currentTime >= expiryTime) {
           console.log("Token expired, logging out...");
-          dispatch(logout());
           navigate("/login");
         }
       } catch (error) {
         console.error("Invalid token:", error);
-        dispatch(logout());
         navigate("/login");
       }
     };
@@ -49,11 +46,6 @@ function IdeasPage() {
 
     return () => clearInterval(interval);
   }, [dispatch, navigate]);
-
-  // const handleLogout = () => {
-  //   dispatch(logout());
-  //   navigate("/login");
-  // };
 
   return (
     <div className="app-shell">

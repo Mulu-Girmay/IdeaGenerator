@@ -67,30 +67,14 @@ function IdeaForm({ onClose }: IdeaFormProps) {
         details: trimmedDetails,
       }),
     );
+    setTitle("");
+    setDetails("");
   };
 
   const isLoading = status === "loading";
 
   return (
     <div>
-      {/* {onClose && (
-        <button
-          onClick={onClose}
-          style={{
-            position: "absolute",
-            top: "10px",
-            right: "10px",
-            background: "transparent",
-            border: "none",
-            fontSize: "20px",
-            cursor: "pointer",
-            color: "#666",
-          }}
-        >
-          ✕
-        </button>
-      )} */}
-
       <form className="idea-form" onSubmit={handleSubmit}>
         <h2>Submit a new idea</h2>
 
